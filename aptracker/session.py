@@ -1,0 +1,110 @@
+# -*- encoding: utf-8 -*-
+
+"""
+Track a project that has multiple instances or sessions running in a
+production environment using session managers that can be used to set
+an unique identity and can be tracked from a centralized system.
+"""
+
+import os
+import getpass
+import subprocess
+import datetime as dt
+
+from uuid import uuid4 as UUIDx
+from dataclasses import dataclass
+
+@dataclass(frozen = True)
+class SessionConfig:
+    """
+    A Strictly Frozen Data Class for to Handle Sessions of a Project
+
+    A session of a project can be running instances or schedules on a
+    production environment. The session can be tracked using a unique
+    key and can be referenced back to the project.
+
+    :type  JOB_NAME: str
+    :param JOB_NAME: Name of the job, this can be a "human-redable"
+        name or a unique project ket that can be used identify the
+        project. An efficient system should be able to track the job
+        and all its associated sessions using this key.
+
+    :type  SESSION_ID: str
+    :param SESSION_ID: A unique session identity key, defaults to
+        ``UUID`` that can be used for a particular project.
+
+    :type  SCHEDULED_ON: dt.datetime
+    :param SCHEDULED_ON: The date and time when the session was
+        created, defaults to ``dt.datetime.now()`` value.
+
+    :type  SCHEDULED_BY: str
+    :param SCHEDULED_BY: Name of the user, machine or instance where
+        the session was created.
+
+    :type  ENVIRONMENT: str
+    :param ENVIRONMENT: Environment details, defaults to ``dev``. Any
+        values can be set and there is no restriction.
+
+    :type  VERBOSEMODE: bool
+    :param VERBOSEMODE: Verbose details into console when True
+        (default) during post initialization.
+
+    The data class is defined as ``frozen`` as once initialized this
+    value should not be changed or altered. Example usage:
+
+    .. code-block:: python
+
+        import aptracker as apt
+
+        session = apt.SessionConfig(JOB_NAME = "Example Job")
+        >> Session ID : ABC... Crated for 'Example Job' at ...
+    """
+
+    JOB_NAME : str
+
+    # ? global frozen values for a project run, with default values
+    SESSION_ID : str = str(UUIDx()).upper()
+    SCHEDULED_ON : dt.datetime = dt.datetime.now()
+    SCHEDULED_BY : str = getpass.getuser()
+
+    # ? control for environment, verbose statements
+    ENVIRONMENT : str = "dev"
+    VERBOSEMODE : bool = True
+
+
+    @property
+    def PROJECT_ROOT(self) -> str:
+        """
+        Define Root Directory for the Project if Version Controlled
+
+        The root of the project can be defined directly, if version
+        controlled using ``git``, else sets to the current directory.
+        The value is always absolute path to the project.
+        """
+
+        root = os.path.join(subprocess.Popen(
+            ['git', 'rev-parse', '--show-toplevel'],
+            stdout=subprocess.PIPE
+        ).communicate()[0].rstrip().decode('utf-8'))
+
+        return root or os.path.abspath(os.path.dirname(__file__))
+
+
+    def __post_init__(self) -> None:
+        """
+        Post Session Initialization Verbose Details into Console/Log
+
+        When a session is created, log details into console about the
+        session and other important attributes. Useful in development
+        environment, can be toggled based on object.
+        """
+
+        statement = f"Session ID : {self.SESSION_ID} " \
+            + f"Created for '{self.JOB_NAME}' at {self.SCHEDULED_ON}"
+        
+        if self.VERBOSEMODE:
+            print(statement)
+        else:
+            pass
+
+        return
