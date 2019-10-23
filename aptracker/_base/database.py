@@ -173,6 +173,21 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
+    async def register(self, session : SessionConfig) -> str:
+        """
+        Register a new session for the underlying defined/created
+        project, this should use the session configuration and any
+        atribute associated with the session can be used directly.
+
+        :type  session: SessionConfig
+        :param session: A frozen data class that is initialized to
+            handle the sessions of a project.
+        """
+
+        pass
+
+
+    @abc.abstractmethod
     async def eventlogger(self, session : SessionConfig) -> str:
         """
         Append a event tracker to a session. Each call records a
