@@ -60,6 +60,10 @@ class SessionRecord(BaseSchema):
         nullable = False
     )
 
+    session_name : Mapped[str] = Column(
+        String(128), nullable = False
+    )
+
     scheduled_by : Mapped[str] = Column(
         String(36), nullable = False
     )
