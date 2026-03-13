@@ -22,6 +22,11 @@ setup(
     packages = find_packages(
         exclude = ["tests*", "examples*"]
     ),
+    install_requires = [
+        "aiosqlite>=0.22",
+        "asyncpg>=0.31",
+        "SQLAlchemy>=2.0"
+    ],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
