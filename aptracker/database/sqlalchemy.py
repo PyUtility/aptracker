@@ -119,6 +119,8 @@ class SQLAlchemyDB(BaseDatabase):
                 created_on = now
             ))
 
+            await db_session.commit()
+
         return job_name
 
 
@@ -152,7 +154,7 @@ class SQLAlchemyDB(BaseDatabase):
                 project_id = job_name,
                 session_name = description,
                 scheduled_by = session.SCHEDULED_BY,
-                created_on = session.CREATED_ON
+                created_on = session.SCHEDULED_ON
             ))
 
             await db_session.commit()
