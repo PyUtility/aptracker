@@ -23,7 +23,7 @@ pip install aptracker
 All contributions, bug reports, bug fixes, documentation improvements, enhancements, and ideas are welcome. A detailed
 overview on how to contribute can be found in the **contributing guidelines**. If you run into an issue, please file a new
 [issue](https://github.com/PyUtility/apttracker/issues) for discussion. Create a pull request for a new feature or a fix to
-an existing issue [here](https://github.com/ZenithClown/aptracker/pulls).
+an existing issue [here](https://github.com/PyUtility/aptracker/pulls).
 
 As contributors and maintainers to this project, you are expected to abide by [PyUtility](https://github.com/PyUtility)'s
 code of conduct. More information can be found at: **Contributor Code of Conduct**.
