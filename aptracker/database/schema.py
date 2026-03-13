@@ -11,7 +11,7 @@ collision when the module shares the database with other application.
 
 import datetime as dt
 
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped
 from sqlalchemy import Column, String, DateTime, Index, ForeignKey
 
 from aptracker._base.schema import BaseSchema
@@ -37,11 +37,6 @@ class ProjectRecord(BaseSchema):
         onupdate = dt.datetime.now()
     )
 
-    session : Mapped[list["SessionRecord"]] = relationship(
-        "SessionRecord", back_populates = "project",
-        cascade = "all, delete-orphan", passive_deletes = True
-    )
-
 
 class SessionRecord(BaseSchema):
     """
@@ -50,7 +45,7 @@ class SessionRecord(BaseSchema):
 
     __tablename__ = "apt_session"
     __table_args__ = (
-        Index("idx_apt_sessions_project_id", "project_id")
+        Index("idx_apt_sessions_project_id", "project_id"),
     )
 
     session_id : Mapped[str] = Column(String(36), primary_key = True)
@@ -75,8 +70,4 @@ class SessionRecord(BaseSchema):
     updated_on : Mapped[dt.datetime] = Column(
         DateTime(timezone = True), default = None,
         onupdate = dt.datetime.now()
-    )
-
-    project : Mapped["ProjectRecord"] = relationship(
-        "ProjectRecord", back_populates = "sessions"
     )
