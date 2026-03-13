@@ -8,9 +8,16 @@ uses SQLite as the database backend. The backend tables are populated
 with a new project and a new session is recorded for the project.
 """
 
+import os
+import sys
+
 import uuid
 import asyncio
 import logging
+
+sys.path.append(os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+))
 
 from aptracker.session import SessionConfig
 from aptracker.database.sqlalchemy import SQLAlchemyDB

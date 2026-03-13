@@ -22,6 +22,9 @@ setup(
     packages = find_packages(
         exclude = ["tests*", "examples*"]
     ),
+    install_requires = [
+        "SQLAlchemy>=2.0"
+    ],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

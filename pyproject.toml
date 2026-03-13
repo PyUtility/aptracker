@@ -1,5 +1,6 @@
 [build-system]
 requires = [
+    "SQLAlchemy>=2.0",
     "setuptools==82.0.1",
     "wheel==0.46.3"
 ]
@@ -26,6 +27,10 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License"
+]
+
+dependencies = [
+    "SQLAlchemy>=2.0"
 ]
 
 [tool.setuptools]
