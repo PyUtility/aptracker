@@ -37,12 +37,19 @@ class BaseDatabase(abc.ABC):
     :param logger: Standard logger for recording operational events.
         Callers should supply a named logger to enable structured log
         filtering using wrappers.
+
+    :type  session: SessionConfig
+    :param session: Session configuration for the current project and
+        the session is defined at the base class level. This reduces
+        calling overheads during other methods like ``create`` or
+        ``register`` where the values are used.
     """
 
     def __init__(
         self,
         engine : object,
-        logger : logging.Logger
+        logger : logging.Logger,
+        session : SessionConfig
     ) -> None:
         """
         Initialization Method for Database Backends
@@ -68,13 +75,32 @@ class BaseDatabase(abc.ABC):
 
         self.engine = engine
         self.logger = logger
+        self.session = session
 
         # connection status, should be False, implement in connect()
         self._status = False
 
 
+    @property
+    def job_id(self) -> str:
+        """
+        Return the Job ID of the Current Session
+        """
+
+        return self.session.JOB_ID
+
+
+    @property
+    def session_id(self) -> str:
+        """
+        Return the Session ID of the Current Session
+        """
+
+        return self.session.SESSION_ID
+
+
     @abc.abstractmethod
-    async def connect(self, *args, **kwargs) -> None:
+    async def connect(self, *args, **kwargs) -> None: # type: ignore
         """
         Initialize underlying connection pool or establish a
         persistent connection to the database. Implementations must be
@@ -85,7 +111,7 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def disconnect(self, *args, **kwargs) -> None:
+    async def disconnect(self, *args, **kwargs) -> None: # type: ignore
         """
         Close underlying connection pool or persistent connection to
         the database. The method should be able to release all the
@@ -106,7 +132,7 @@ class BaseDatabase(abc.ABC):
         used directly inside an ``async with`` block.
         """
 
-        await self.connect()
+        await self.connect() # type: ignore
         return self
 
 
@@ -142,7 +168,7 @@ class BaseDatabase(abc.ABC):
         verify that the signature matches the protocol.
         """
 
-        await self.disconnect()
+        await self.disconnect() # type: ignore
         return
 
 
