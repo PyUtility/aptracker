@@ -184,7 +184,7 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def create(self, session : SessionConfig) -> str:
+    async def create(self, job_name : str) -> str:
         """
         Register a new project, this should use the session
         configuration and any atribute associated with the session
@@ -199,7 +199,7 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def register(self, session : SessionConfig) -> str:
+    async def register(self, session_name : str) -> str:
         """
         Register a new session for the underlying defined/created
         project, this should use the session configuration and any
@@ -214,7 +214,7 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def eventlogger(self, session : SessionConfig) -> str:
+    async def eventlogger(self) -> str:
         """
         Append a event tracker to a session. Each call records a
         discrete activity within the session, enabling fine-grained
