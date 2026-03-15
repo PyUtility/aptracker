@@ -57,14 +57,14 @@ class SessionRecord(BaseSchema):
     session_id : Mapped[str] = mapped_column(
         String(36), primary_key = True
     )
-    project_id : Mapped[str] = mapped_column(
-        String(36),
-        ForeignKey("apt_project.job_name", ondelete = "CASCADE"),
-        nullable = False
-    )
-
     session_name : Mapped[str] = mapped_column(
         String(128), nullable = False
+    )
+
+    job_id : Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("apt_project.job_id", ondelete = "CASCADE"),
+        nullable = False
     )
 
     created_on : Mapped[dt.datetime] = mapped_column(
