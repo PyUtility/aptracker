@@ -31,22 +31,19 @@ async def main(session : SessionConfig) -> None:
 
     async with SQLAlchemyDB(
         engine = "sqlite+aiosqlite:///example.db",
-        logger = logger, verbose = True
+        logger = logger, session = session, verbose = True
     ) as db:
         project_id = await db.create(
-            session = session, description = project_name
+            job_name = project_name
         )
 
         _ = await db.register(
-            session = session, description = session_name
+            session_name = session_name
         )
 
         print(f"Project ID: {project_id}")
 
 
 if __name__ == "__main__":
-    session = SessionConfig(
-        JOB_NAME = str(uuid.uuid4()).upper()
-    )
-
+    session = SessionConfig()
     asyncio.run(main(session = session))
