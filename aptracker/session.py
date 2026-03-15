@@ -19,27 +19,31 @@ class SessionConfig:
     """
     A Strictly Frozen Data Class for to Handle Sessions of a Project
 
-    A session of a project can be running instances or schedules on a
-    production environment. The session can be tracked using a unique
-    key and can be referenced back to the project.
+    A session of a job/project can be running instances or schedules
+    on a production environment. The session can be tracked using a
+    unique key and can be referenced back to the project.
 
-    :type  JOB_NAME: str
-    :param JOB_NAME: Name of the job, this can be a "human-redable"
-        name or a unique project ket that can be used identify the
-        project. An efficient system should be able to track the job
-        and all its associated sessions using this key.
+    :type  JOB_ID: str
+    :param JOB_ID: A unique job identity key, defaults to ``UUID``
+        that can be used for a particular project. This will be used
+        as a primary key in the database. The alternate is the name
+        of the job/project which is uniquely defined during the
+        project creation.
 
     :type  SESSION_ID: str
     :param SESSION_ID: A unique session identity key, defaults to
         ``UUID`` that can be used for a particular project.
 
-    :type  SCHEDULED_ON: dt.datetime
-    :param SCHEDULED_ON: The date and time when the session was
-        created, defaults to ``dt.datetime.now()`` value.
+    :type  CREATED_ON: dt.datetime
+    :param CREATED_ON: The date and time when the session was
+        created, defaults to ``dt.datetime.now()`` value. The value
+        can be different from the scheduled date and time of the job
+        execution based on the session manager.
 
-    :type  SCHEDULED_BY: str
-    :param SCHEDULED_BY: Name of the user, machine or instance where
-        the session was created.
+    :type  CREATED_BY: str
+    :param CREATED_BY: Name of the user, machine or instance where
+        the session was created. Defaults to ``getpass.getuser()``
+        for the current environment.
 
     :type  ENVIRONMENT: str
     :param ENVIRONMENT: Environment details, defaults to ``dev``. Any
@@ -56,16 +60,19 @@ class SessionConfig:
 
         import aptracker as apt
 
-        session = apt.SessionConfig(JOB_NAME = "Example Job")
-        >> Session ID : ABC... Crated for 'Example Job' at ...
+        session = apt.SessionConfig(JOB_ID = "ABC...")
+        >> Session ID : ABC... Crated for 'ABC...' at ...
     """
 
-    JOB_NAME : str
+    JOB_ID : str = str(UUIDx()).upper()
 
     # ? global frozen values for a project run, with default values
     SESSION_ID : str = str(UUIDx()).upper()
-    SCHEDULED_ON : dt.datetime = dt.datetime.now()
-    SCHEDULED_BY : str = getpass.getuser()
+
+    # ? controller for the session, created on, created by can be
+    # different from the scheduled date and time of execution
+    CREATED_ON : dt.datetime = dt.datetime.now()
+    CREATED_BY : str = getpass.getuser()
 
     # ? control for environment, verbose statements
     ENVIRONMENT : str = "dev"
@@ -100,7 +107,7 @@ class SessionConfig:
         """
 
         statement = f"Session ID : {self.SESSION_ID} " \
-            + f"Created for '{self.JOB_NAME}' at {self.SCHEDULED_ON}"
+            + f"Created for '{self.JOB_ID}' at {self.CREATED_ON}"
         
         if self.VERBOSEMODE:
             print(statement)
@@ -108,3 +115,7 @@ class SessionConfig:
             pass
 
         return
+
+
+    def __repr__(self) -> str:
+        return f"JOB_ID: {self.JOB_ID} SESSION_ID: {self.SESSION_ID}"

@@ -37,12 +37,19 @@ class BaseDatabase(abc.ABC):
     :param logger: Standard logger for recording operational events.
         Callers should supply a named logger to enable structured log
         filtering using wrappers.
+
+    :type  session: SessionConfig
+    :param session: Session configuration for the current project and
+        the session is defined at the base class level. This reduces
+        calling overheads during other methods like ``create`` or
+        ``register`` where the values are used.
     """
 
     def __init__(
         self,
         engine : object,
-        logger : logging.Logger
+        logger : logging.Logger,
+        session : SessionConfig
     ) -> None:
         """
         Initialization Method for Database Backends
@@ -68,13 +75,32 @@ class BaseDatabase(abc.ABC):
 
         self.engine = engine
         self.logger = logger
+        self.session = session
 
         # connection status, should be False, implement in connect()
         self._status = False
 
 
+    @property
+    def job_id(self) -> str:
+        """
+        Return the Job ID of the Current Session
+        """
+
+        return self.session.JOB_ID
+
+
+    @property
+    def session_id(self) -> str:
+        """
+        Return the Session ID of the Current Session
+        """
+
+        return self.session.SESSION_ID
+
+
     @abc.abstractmethod
-    async def connect(self, *args, **kwargs) -> None:
+    async def connect(self, *args, **kwargs) -> None: # type: ignore
         """
         Initialize underlying connection pool or establish a
         persistent connection to the database. Implementations must be
@@ -85,7 +111,7 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def disconnect(self, *args, **kwargs) -> None:
+    async def disconnect(self, *args, **kwargs) -> None: # type: ignore
         """
         Close underlying connection pool or persistent connection to
         the database. The method should be able to release all the
@@ -106,7 +132,7 @@ class BaseDatabase(abc.ABC):
         used directly inside an ``async with`` block.
         """
 
-        await self.connect()
+        await self.connect() # type: ignore
         return self
 
 
@@ -142,7 +168,7 @@ class BaseDatabase(abc.ABC):
         verify that the signature matches the protocol.
         """
 
-        await self.disconnect()
+        await self.disconnect() # type: ignore
         return
 
 
@@ -158,37 +184,45 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def create(self, session : SessionConfig) -> str:
+    async def create(self, job_name : str) -> str:
         """
         Register a new project, this should use the session
         configuration and any atribute associated with the session
         can be used directly in the query.
 
-        :type  session: SessionConfig
-        :param session: A frozen data class that is initialized to
-            handle the sessions of a project.
+        :type  job_name: str
+        :param job_name: An unique human redable project name for
+            the project. The session configuration does not use the
+            job name field, instead refers to the job id which is
+            typically a unique identifier for the project.
         """
 
         pass
 
 
     @abc.abstractmethod
-    async def register(self, session : SessionConfig) -> str:
+    async def register(self, session_name : str, **kwargs) -> str: # type: ignore
         """
         Register a new session for the underlying defined/created
         project, this should use the session configuration and any
         atribute associated with the session can be used directly.
 
-        :type  session: SessionConfig
-        :param session: A frozen data class that is initialized to
-            handle the sessions of a project.
+        :type  session_name: str
+        :param session_name: A human redable session description that
+            can be used to identify the session. The value is not
+            unique as same type of jobs can have the same name. The
+            value is not used by the session config, and must be
+            passed individually to the register method.
+
+        The function allows keyword arguments like session scheduled
+        status, next scheduled date etc. which are optional.
         """
 
         pass
 
 
     @abc.abstractmethod
-    async def eventlogger(self, session : SessionConfig) -> str:
+    async def eventlogger(self) -> str:
         """
         Append a event tracker to a session. Each call records a
         discrete activity within the session, enabling fine-grained

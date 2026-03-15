@@ -43,12 +43,15 @@ class SQLAlchemyDB(BaseDatabase):
         self,
         engine : str,
         logger : logging.Logger,
+        session : SessionConfig,
         verbose : bool = False
     ) -> None:
         engine = create_async_engine(engine, echo = verbose)
 
         logger_ = logger or logging.getLogger(__name__)
-        super().__init__(engine = engine, logger = logger_)
+        super().__init__(
+            engine = engine, logger = logger_, session = session
+        )
 
         # session factory object
         self._session_factory : async_sessionmaker[AsyncSession] = \
@@ -65,8 +68,10 @@ class SQLAlchemyDB(BaseDatabase):
         database engine.
         """
 
-        async with self.engine.begin() as conn:
-            await conn.run_sync(BaseSchema.metadata.create_all)
+        async with self.engine.begin() as conn: # type: ignore
+            await conn.run_sync(
+                BaseSchema.metadata.create_all
+            )
 
         self._status = True
         self.logger.info(
@@ -89,78 +94,76 @@ class SQLAlchemyDB(BaseDatabase):
         return
 
 
-    async def create(
-        self,
-        session : SessionConfig,
-        description : str
-    ) -> str:
+    async def create(self, job_name : str) -> str:
         """
         Register a new project in the database using the session
         configuration parameter and add the data to the underlying.
 
-        :type  session: SessionConfig
-        :param session: Session configuration, a frozen data class
-            that is initialized to handle the sessions of a project.
-
-        :type  description: str
-        :param description: An unique human redable project name for
+        :type  job_name: str
+        :param job_name: An unique human redable project name for
             the project. The session configuration does not use the
-            project name field, instead refers to the job name which
-            is typically a unique identifier for the project.
+            job name field, instead refers to the job id which is
+            typically a unique identifier for the project.
         """
 
         now = dt.datetime.now(tz = dt.timezone.utc)
-        job_name = session.JOB_NAME # frozen name; type: ignore
+        retvalue = f"ID: {self.job_id} Job Name: {job_name}"
 
         async with self._session_factory() as db_session:
             db_session.add(ProjectRecord(
+                job_id = self.job_id,
                 job_name = job_name,
-                job_description = description,
                 created_on = now
             ))
 
             await db_session.commit()
 
-        return job_name
+        return retvalue
 
 
-    async def register(
-        self,
-        session : SessionConfig,
-        description : str
-    ) -> str:
+    async def register(self, session_name : str, **kwargs) -> str: # type: ignore
         """
         Register a new project session, this session is unique that
         can be used to uniquely identify the project details - like
         report builder, development checks, chore runs, etc.
 
-        :type  session: SessionConfig
-        :param session: Session configuration, a frozen data class
-            that is initialized to handle the sessions of a project.
-
-        :type  description: str
-        :param description: A human redable session description that
+        :type  session_name: str
+        :param session_name: A human redable session description that
             can be used to identify the session. The value is not
             unique as same type of jobs can have the same name. The
             value is not used by the session config, and must be
             passed individually to the register method.
+
+        The following optional keywords arguments are accepted, if
+        not passed defaults to database defaults (if any):
+
+            * ``scheduled_on`` (:class:`~datetime.datetime`): The
+              date and time when the session was scheduled to be
+              executed, if not passed defaults to database defaults.
+
+            * ``next_scheduled_on`` (:class:`~datetime.datetime`): The
+              date and time when the session is scheduled to be
+              executed next, this is nullable and defaults to None.
         """
 
-        job_name = session.JOB_NAME # frozen name; type: ignore
+        now = dt.datetime.now(tz = dt.timezone.utc)
+        retvalue = f"ID: {self.job_id} Session ID: {self.session_id}"
 
         async with self._session_factory() as db_session:
             db_session.add(SessionRecord(
-                session_id = session.SESSION_ID,
-                project_id = job_name,
-                session_name = description,
-                scheduled_by = session.SCHEDULED_BY,
-                created_on = session.SCHEDULED_ON
+                session_id = self.session_id,
+                session_name = session_name,
+                job_id = self.job_id,
+                created_on = self.session.CREATED_ON,
+                created_by = self.session.CREATED_BY,
+                scheduled_on = kwargs.get("scheduled_on", now),
+                next_scheduled_on = kwargs.get("next_scheduled_on", None)
             ))
 
             await db_session.commit()
 
-        return job_name
+        return retvalue
 
 
-    async def eventlogger(self, session : SessionConfig) -> str:
+    async def eventlogger(self) -> str: # type: ignore
         pass

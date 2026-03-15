@@ -11,8 +11,8 @@ collision when the module shares the database with other application.
 
 import datetime as dt
 
-from sqlalchemy.orm import Mapped
-from sqlalchemy import Column, String, DateTime, Index, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, DateTime, Index, ForeignKey, Boolean
 
 from aptracker._base.schema import BaseSchema
 
@@ -23,18 +23,24 @@ class ProjectRecord(BaseSchema):
 
     __tablename__ = "apt_project"
 
-    job_name : Mapped[str] = Column(String(36), primary_key = True)
-    job_description : Mapped[str] = Column(
+    job_id : Mapped[str] = mapped_column(
+        String(36), primary_key = True
+    )
+    job_name : Mapped[str] = mapped_column(
         String(128), unique = True, nullable = False
     )
 
-    created_on : Mapped[dt.datetime] = Column(
+    created_on : Mapped[dt.datetime] = mapped_column(
         DateTime(timezone = True), nullable = False,
         default = dt.datetime.now()
     )
-    updated_on : Mapped[dt.datetime] = Column(
-        DateTime(timezone = True), default = None,
+    updated_on : Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone = True), nullable = True, default = None,
         onupdate = dt.datetime.now()
+    )
+
+    is_active : Mapped[bool] = mapped_column(
+        Boolean, nullable = False, default = True
     )
 
 
@@ -45,29 +51,46 @@ class SessionRecord(BaseSchema):
 
     __tablename__ = "apt_session"
     __table_args__ = (
-        Index("idx_apt_sessions_project_id", "project_id"),
+        Index("idx_apt_sessions_job_id", "job_id"),
+        Index("idx_apt_sessions_session_id", "session_id"),
     )
 
-    session_id : Mapped[str] = Column(String(36), primary_key = True)
-    project_id : Mapped[str] = Column(
-        String(36),
-        ForeignKey("apt_project.job_name", ondelete = "CASCADE"),
-        nullable = False
+    session_id : Mapped[str] = mapped_column(
+        String(36), primary_key = True
     )
-
-    session_name : Mapped[str] = Column(
+    session_name : Mapped[str] = mapped_column(
         String(128), nullable = False
     )
 
-    scheduled_by : Mapped[str] = Column(
-        String(36), nullable = False
+    job_id : Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("apt_project.job_id", ondelete = "CASCADE"),
+        nullable = False
     )
 
-    created_on : Mapped[dt.datetime] = Column(
+    created_on : Mapped[dt.datetime] = mapped_column(
         DateTime(timezone = True), nullable = False,
         default = dt.datetime.now()
     )
-    updated_on : Mapped[dt.datetime] = Column(
-        DateTime(timezone = True), default = None,
+
+    created_by : Mapped[str] = mapped_column(
+        String(36), nullable = False
+    )
+
+    scheduled_on : Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone = True), nullable = False,
+        default = dt.datetime.now()
+    )
+
+    next_scheduled_on : Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone = True), nullable = True
+    )
+
+    decommissioned_on : Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone = True), nullable = True, default = None,
         onupdate = dt.datetime.now()
+    )
+
+    decommissioned_by : Mapped[str] = mapped_column(
+        String(36), nullable = True
     )
