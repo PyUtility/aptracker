@@ -19,15 +19,16 @@ class SessionConfig:
     """
     A Strictly Frozen Data Class for to Handle Sessions of a Project
 
-    A session of a project can be running instances or schedules on a
-    production environment. The session can be tracked using a unique
-    key and can be referenced back to the project.
+    A session of a job/project can be running instances or schedules
+    on a production environment. The session can be tracked using a
+    unique key and can be referenced back to the project.
 
-    :type  JOB_NAME: str
-    :param JOB_NAME: Name of the job, this can be a "human-redable"
-        name or a unique project ket that can be used identify the
-        project. An efficient system should be able to track the job
-        and all its associated sessions using this key.
+    :type  JOB_ID: str
+    :param JOB_ID: A unique job identity key, defaults to ``UUID``
+        that can be used for a particular project. This will be used
+        as a primary key in the database. The alternate is the name
+        of the job/project which is uniquely defined during the
+        project creation.
 
     :type  SESSION_ID: str
     :param SESSION_ID: A unique session identity key, defaults to
@@ -56,11 +57,11 @@ class SessionConfig:
 
         import aptracker as apt
 
-        session = apt.SessionConfig(JOB_NAME = "Example Job")
-        >> Session ID : ABC... Crated for 'Example Job' at ...
+        session = apt.SessionConfig(JOB_ID = "ABC...")
+        >> Session ID : ABC... Crated for 'ABC...' at ...
     """
 
-    JOB_NAME : str
+    JOB_ID : str = str(UUIDx()).upper()
 
     # ? global frozen values for a project run, with default values
     SESSION_ID : str = str(UUIDx()).upper()
@@ -100,7 +101,7 @@ class SessionConfig:
         """
 
         statement = f"Session ID : {self.SESSION_ID} " \
-            + f"Created for '{self.JOB_NAME}' at {self.SCHEDULED_ON}"
+            + f"Created for '{self.JOB_ID}' at {self.SCHEDULED_ON}"
         
         if self.VERBOSEMODE:
             print(statement)
