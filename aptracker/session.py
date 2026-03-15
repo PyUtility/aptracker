@@ -109,3 +109,7 @@ class SessionConfig:
             pass
 
         return
+
+
+    def __repr__(self) -> str:
+        return f"JOB_ID: {self.JOB_ID} SESSION_ID: {self.SESSION_ID}"
