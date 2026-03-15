@@ -50,6 +50,17 @@ under `h3` tags, while the `micro` and "version identifiers" are listed under `h
 
 </details>
 
+### APTracker v2.0.0 | 2026-03-15
+
+A major upgrade to the **`APTracker`** module that brings unified system and naming bug fixes. The module now handles jobs and
+sessions robustly using unified names across the system with additional details for diagnosis and testing.
+
+To explore and understand the full capabilities, upgrade to the latest version using `pip` as:
+
+```shell
+pip install -U aptracker
+```
+
 ### APTracker v1.1.0 | 2026-03-14
 
 The "Advance Python (AP)" Project Tracker **`APTracker`** is a functional module that provides asynchronous functions to track
