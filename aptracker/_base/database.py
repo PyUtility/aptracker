@@ -190,24 +190,32 @@ class BaseDatabase(abc.ABC):
         configuration and any atribute associated with the session
         can be used directly in the query.
 
-        :type  session: SessionConfig
-        :param session: A frozen data class that is initialized to
-            handle the sessions of a project.
+        :type  job_name: str
+        :param job_name: An unique human redable project name for
+            the project. The session configuration does not use the
+            job name field, instead refers to the job id which is
+            typically a unique identifier for the project.
         """
 
         pass
 
 
     @abc.abstractmethod
-    async def register(self, session_name : str) -> str:
+    async def register(self, session_name : str, **kwargs) -> str: # type: ignore
         """
         Register a new session for the underlying defined/created
         project, this should use the session configuration and any
         atribute associated with the session can be used directly.
 
-        :type  session: SessionConfig
-        :param session: A frozen data class that is initialized to
-            handle the sessions of a project.
+        :type  session_name: str
+        :param session_name: A human redable session description that
+            can be used to identify the session. The value is not
+            unique as same type of jobs can have the same name. The
+            value is not used by the session config, and must be
+            passed individually to the register method.
+
+        The function allows keyword arguments like session scheduled
+        status, next scheduled date etc. which are optional.
         """
 
         pass
