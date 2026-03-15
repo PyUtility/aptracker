@@ -51,7 +51,8 @@ class SessionRecord(BaseSchema):
 
     __tablename__ = "apt_session"
     __table_args__ = (
-        Index("idx_apt_sessions_project_id", "project_id"),
+        Index("idx_apt_sessions_job_id", "job_id"),
+        Index("idx_apt_sessions_session_id", "session_id"),
     )
 
     session_id : Mapped[str] = mapped_column(
