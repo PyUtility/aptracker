@@ -35,7 +35,7 @@ class ProjectRecord(BaseSchema):
         default = dt.datetime.now()
     )
     updated_on : Mapped[dt.datetime] = mapped_column(
-        DateTime(timezone = True), default = None,
+        DateTime(timezone = True), nullable = True, default = None,
         onupdate = dt.datetime.now()
     )
 
@@ -87,10 +87,10 @@ class SessionRecord(BaseSchema):
     )
 
     decommissioned_on : Mapped[dt.datetime] = mapped_column(
-        DateTime(timezone = True), default = None,
+        DateTime(timezone = True), nullable = True, default = None,
         onupdate = dt.datetime.now()
     )
 
     decommissioned_by : Mapped[str] = mapped_column(
-        String(36), nullable = False
+        String(36), nullable = True
     )
