@@ -10,7 +10,7 @@ that provides simple context managers, classes etc. with a dynamic
 dashboard of the performance logs.
 """
 
-__version__ = "v1.1.0"
+__version__ = "v2.0.0"
 
 # ? added init time options registrations from aptracker.api
 from aptracker.api import * # noqa: F401, F403 # pyright: ignore[reportMissingImports]
