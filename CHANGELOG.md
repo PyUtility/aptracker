@@ -50,6 +50,12 @@ under `h3` tags, while the `micro` and "version identifiers" are listed under `h
 
 </details>
 
+### APTracker v2.1.1 | 2026-03-16
+
+A context manager is added to operate on any application by using one single function to perform different types of operations,
+example all the three operations - (I) `create` to create/register a new project; (II) `register` a new session when a code is
+running in the environment, and (III) `eventlogger` to log different types of events for the session.
+
 ### APTracker v2.1.0 | 2026-03-16
 
 A table **`apt_events`** is created along with updated context framework to capture a new event log along with error traceback
