@@ -129,7 +129,7 @@ class EventLogs(BaseSchema):
     exception_value : Mapped[str] = mapped_column(
         String(128), nullable = True
     )
-    exception_tracebak : Mapped[str] = mapped_column(
+    exception_traceback : Mapped[str] = mapped_column(
         String(1024), nullable = True
     )
 

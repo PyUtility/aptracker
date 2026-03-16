@@ -36,6 +36,10 @@ async def main(session : SessionConfig) -> None:
 
         print(f"Created Session: {statement}")
 
+        statement = await db.eventlogger(
+            message = "Test Message"
+        )
+
 
 if __name__ == "__main__":
     session = SessionConfig()
