@@ -31,9 +31,9 @@ class APTTerminalClient:
         """
 
         params : Dict[str, Dict[str, Any]] = dict(
-            create = {"job_name" : kwargs["job_name"]},
-            register = {"session_name" : kwargs["session_name"]},
-            eventlogger = {"message" : kwargs["message"]}
+            create = {"job_name" : kwargs.get("job_name", None)},
+            register = {"session_name" : kwargs.get("session_name", None)},
+            eventlogger = {"message" : kwargs.get("message", None)}
         )
 
         async with SQLAlchemyDB(
