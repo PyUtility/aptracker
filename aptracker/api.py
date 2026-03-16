@@ -6,7 +6,9 @@ module level for :mod:`aptracker` module.
 """
 
 from aptracker.session import SessionConfig
+from aptracker.manager import APTTerminalClient
 
 __all__ = [
-    "SessionConfig"
+    "SessionConfig",
+    "APTTerminalClient"
 ]
