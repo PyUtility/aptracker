@@ -50,7 +50,7 @@ under `h3` tags, while the `micro` and "version identifiers" are listed under `h
 
 </details>
 
-### APTracker v2.2.0 | 2026-03-16
+### APTracker v2.2.1 | 2026-03-16
 
 An enhanced version bringing in event management/logging along with terminal client feature to perform tasts easily. In addition,
 there were minor bug fixes as below:
