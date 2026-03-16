@@ -18,6 +18,7 @@ from aptracker._base.schema import BaseSchema
 from aptracker._base.database import BaseDatabase
 
 from aptracker.database.schema import (
+    EventLogs,
     ProjectRecord,
     SessionRecord
 )
@@ -165,5 +166,48 @@ class SQLAlchemyDB(BaseDatabase):
         return retvalue
 
 
-    async def eventlogger(self) -> str: # type: ignore
-        pass
+    async def eventlogger(
+        self,
+        message : str,
+        exec_type : str = None,
+        exec_value : str = None,
+        exec_traceback : str = None
+    ) -> None:
+        """
+        Append a event tracker to a session. Each call records a
+        discrete activity within the session, enabling fine-grained
+        progress tracking and post-analysis.
+
+        :type  message: str
+        :param message: Detailed message of the event for the session,
+            this can typically be the :mod:`logger.info(...)` values.
+
+        :type  exec_type: str
+        :param exec_type: Name of the exception, always convert the
+            class name as string using ``.__class__.__name__`` to
+            get the name in string.
+
+        :type  exec_value: str
+        :param exec_value: Value from the exception thrown during the
+            code. Convert the details into a string value.
+
+        :type  exec_traceback: str
+        :param exec_traceback: Complete traceback of the exception
+            event can also be stored, if required.
+        """
+
+        now = dt.datetime.now(tz = dt.timezone.utc)
+
+        async with self._session_factory() as db_session:
+            db_session.add(EventLogs(
+                session_id = self.session_id,
+                message = message,
+                exception_type = exec_type,
+                exception_value = exec_value,
+                exception_traceback = exec_traceback,
+                created_on = now
+            ))
+
+            await db_session.commit()
+
+        return

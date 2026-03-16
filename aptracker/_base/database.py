@@ -222,11 +222,34 @@ class BaseDatabase(abc.ABC):
 
 
     @abc.abstractmethod
-    async def eventlogger(self) -> str:
+    async def eventlogger(
+        self,
+        message : str,
+        exec_type : str = None,
+        exec_value : str = None,
+        exec_traceback : str = None
+    ) -> None:
         """
         Append a event tracker to a session. Each call records a
         discrete activity within the session, enabling fine-grained
         progress tracking and post-analysis.
+
+        :type  message: str
+        :param message: Detailed message of the event for the session,
+            this can typically be the :mod:`logger.info(...)` values.
+
+        :type  exec_type: str
+        :param exec_type: Name of the exception, always convert the
+            class name as string using ``.__class__.__name__`` to
+            get the name in string.
+
+        :type  exec_value: str
+        :param exec_value: Value from the exception thrown during the
+            code. Convert the details into a string value.
+
+        :type  exec_traceback: str
+        :param exec_traceback: Complete traceback of the exception
+            event can also be stored, if required.
         """
 
         pass
