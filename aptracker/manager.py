@@ -40,10 +40,12 @@ class APTTerminalClient:
             engine = self.engine, logger = self.logger,
             session = self.session, verbose = False
         ) as db:
-            retvalue : Optional[Any] = dict(
-                create = await db.create(**params[operation]),
-                register = await db.register(**params[operation]),
-                eventlogger = await db.eventlogger(**params[operation])
+            func : Optional[Any] = dict( # type: ignore
+                create = db.create,
+                register = db.register, # type: ignore
+                eventlogger = db.eventlogger
             )[operation]
+
+            retvalue : Optional[Any] = await func(**params[operation])
 
         return retvalue
