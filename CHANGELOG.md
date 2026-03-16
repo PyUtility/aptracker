@@ -50,6 +50,11 @@ under `h3` tags, while the `micro` and "version identifiers" are listed under `h
 
 </details>
 
+### APTracker v2.1.0 | 2026-03-16
+
+A table **`apt_events`** is created along with updated context framework to capture a new event log along with error traceback
+if any. This is a new feature, does not break any existing functionalities.
+
 ### APTracker v2.0.0 | 2026-03-15
 
 A major upgrade to the **`APTracker`** module that brings unified system and naming bug fixes. The module now handles jobs and
