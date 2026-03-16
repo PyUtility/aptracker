@@ -50,16 +50,24 @@ under `h3` tags, while the `micro` and "version identifiers" are listed under `h
 
 </details>
 
-### APTracker v2.1.1 | 2026-03-16
+### APTracker v2.2.0 | 2026-03-16
 
-A context manager is added to operate on any application by using one single function to perform different types of operations,
-example all the three operations - (I) `create` to create/register a new project; (II) `register` a new session when a code is
-running in the environment, and (III) `eventlogger` to log different types of events for the session.
+An enhanced version bringing in event management/logging along with terminal client feature to perform tasts easily. In addition,
+there were minor bug fixes as below:
 
-### APTracker v2.1.0 | 2026-03-16
+  * 🎉 Created event logger table **`apt_events`** to capture all the messages of the current running session, and
+  * ✨ Added terminal client **`apt.APTTerminalClient`** to perform any type of operation ((I) `create` to create/register a
+    new project; (II) `register` a new session when a code is running in the environment, and (III) `eventlogger` to log
+    different types of events for the session.) easily.
 
-A table **`apt_events`** is created along with updated context framework to capture a new event log along with error traceback
-if any. This is a new feature, does not break any existing functionalities.
+**NOTE:** Two pervious PyPI release are yanked because of internal bugs and features not working properly. End users are
+requested to upgrade to the latest version, using `pip` command as below.
+
+```shell
+pip install -U aptracker
+```
+
+**Full Changelog:** is available in https://github.com/PyUtility/aptracker/compare/v2.0.0...v2.2.0 commit messages.
 
 ### APTracker v2.0.0 | 2026-03-15
 
