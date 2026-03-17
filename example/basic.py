@@ -16,7 +16,7 @@ from aptracker.session import SessionConfig
 from aptracker.database.sqlalchemy import SQLAlchemyDB
 
 async def main(session : SessionConfig) -> None:
-    job_name = f"[{str(uuid.uuid4()).upper()[:3]}] Example Project"
+    job_name = f"Example Project"
     session_name = f"[{str(uuid.uuid4()).upper()[:3]}] Example Session"
 
     logging.basicConfig(level = logging.INFO)
