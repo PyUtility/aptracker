@@ -90,6 +90,24 @@ class SQLAlchemyDB(BaseDatabase):
         disconnected. To reconnect, call :meth:`connect` again.
         """
 
+        # ! once .disconnect() is invoked always flag decomissioned
+        async with self._session_factory() as db_session:
+            _current = (
+                await db_session.execute(
+                    sa.select(SessionRecord).where(
+                        SessionRecord.session_id == self.session_id
+                    )
+                )
+            ).scalar_one_or_none()
+
+            if _current:
+                _current.decommissioned_on = dt.datetime.now(
+                    tz = dt.timezone.utc
+                )
+                _current.decommissioned_by = self.session.CREATED_BY
+
+                await db_session.commit()
+
         await self.engine.dispose()
         self._status = False
 
