@@ -7,6 +7,8 @@ SQLAlchemy Asynchronous Implementation of BaseDatabase for APTracker
 import logging
 import datetime as dt
 
+import sqlalchemy as sa
+
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -110,14 +112,30 @@ class SQLAlchemyDB(BaseDatabase):
         now = dt.datetime.now(tz = dt.timezone.utc)
         retvalue = f"ID: {self.job_id} Job Name: {job_name}"
 
+        # ? check if the job already exists; unique constraint
         async with self._session_factory() as db_session:
-            db_session.add(ProjectRecord(
-                job_id = self.job_id,
-                job_name = job_name,
-                created_on = now
-            ))
+            _exists = (
+                await db_session.execute(
+                    sa.select(ProjectRecord).where(
+                        ProjectRecord.job_name == job_name
+                    )
+                )
+            ).scalar_one_or_none()
 
-            await db_session.commit()
+            if _exists:
+                print(
+                    f"WARN:: JOB : {job_name} Alread Exists. "
+                    f"Use the Existing ID: {_exists.job_id}. "
+                    f"Current ID: {self.job_id} is discarded."
+                )
+            else:
+                db_session.add(ProjectRecord(
+                    job_id = self.job_id,
+                    job_name = job_name,
+                    created_on = now
+                ))
+
+                await db_session.commit()
 
         return retvalue
 
